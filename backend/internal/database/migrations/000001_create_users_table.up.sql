@@ -1,0 +1,34 @@
+BEGIN;
+
+
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TABLE IF NOT EXISTS users (
+  id VARCHAR(100) NOT NULL,
+  name VARCHAR(25) NOT NULL,
+  email VARCHAR(25) NOT NULL,
+  password VARCHAR(100) NOT NULL,
+  role VARCHAR(50) NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+  last_login TIMESTAMPTZ,
+  PRIMARY KEY(id)
+);
+
+CREATE UNIQUE INDEX ON users(email);
+
+
+CREATE TRIGGER set_updated_at
+BEFORE UPDATE ON users
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+
+COMMIT;
+
+

@@ -2,20 +2,9 @@
 #
 # https://gqlgen.com/getting-started/
 
-directive @goTag(
-  key: String!
-  value: String
-) on INPUT_FIELD_DEFINITION | FIELD_DEFINITION
-
-
 input LoginInput {
   email: String! @goTag(key:"validate",value:"required,email")
   password: String! @goTag(key:"validate", value:"required,gte=8")
-}
-
-enum RegisterRole {
-  EventOrganizer
-  User
 }
 
 input RegisterInput {

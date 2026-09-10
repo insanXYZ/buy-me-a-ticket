@@ -60,8 +60,9 @@ func (a *AuthService) LoginHandler(ctx context.Context, input *model.LoginInput)
 		}
 
 		claims := dto.ClaimsJWT{
-			Sub: user.ID,
-			Exp: time.Now().Add(utils.LOGIN_EXP),
+			Role: user.Role,
+			Sub:  user.ID,
+			Exp:  time.Now().Add(utils.LOGIN_EXP),
 		}
 
 		token, err = utils.BuildJWT(claims)

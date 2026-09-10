@@ -3,6 +3,8 @@ package app
 import (
 	"buymeaticket-backend/internal/controllers"
 	"buymeaticket-backend/internal/graph"
+	"buymeaticket-backend/internal/graph/directive"
+	"buymeaticket-backend/internal/middleware"
 	"buymeaticket-backend/internal/repository"
 	"buymeaticket-backend/internal/services"
 
@@ -20,18 +22,26 @@ import (
 func NewGraphHandler(e *echo.Echo, validator *validator.Validate, gorm *gorm.DB) {
 
 	userRepository := repository.NewUserRepository(gorm)
+
+	userService := services.NewUserService(validator, userRepository)
 	authService := services.NewAuthService(validator, userRepository)
+
+	userController := controllers.NewUserController(userService)
 	authController := controllers.NewAuthController(authService)
 
 	resolver := &graph.Resolver{
 		AuthController: authController,
+		UserController: userController,
 	}
 
-	config := graph.Config{Resolvers: resolver}
+	config := graph.Config{
+		Resolvers: resolver,
+		Directives: graph.DirectiveRoot{
+			Auth: directive.AuthDirective,
+		},
+	}
 	srv := handler.New(graph.NewExecutableSchema(config))
 
-	// srv.AddTransport(transport.Options{})
-	// srv.AddTransport(transport.GET{})
 	srv.AddTransport(transport.POST{})
 
 	srv.SetQueryCache(lru.New[*ast.QueryDocument](1000))
@@ -41,6 +51,6 @@ func NewGraphHandler(e *echo.Echo, validator *validator.Validate, gorm *gorm.DB)
 		Cache: lru.New[string](100),
 	})
 
-	e.POST("/graphql", echo.WrapHandler(srv))
+	e.POST("/graphql", echo.WrapHandler(srv), middleware.BaseGraphMiddleware)
 	e.GET("/playground", echo.WrapHandler(playground.Handler("playground", "/graphql")))
 }

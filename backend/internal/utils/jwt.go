@@ -18,9 +18,26 @@ func BuildJWT(claims dto.ClaimsJWT) (string, error) {
 		"exp": jwt.NumericDate{
 			Time: claims.Exp,
 		},
-		"sub": claims.Sub,
+		"role": claims.Role,
+		"sub":  claims.Sub,
 	})
 
 	return token.SignedString(secret)
 
+}
+
+func ParsingJWT(token string) (*dto.ClaimsJWT, error) {
+	parsed, err := jwt.Parse(token, func(t *jwt.Token) (any, error) {
+		return []byte(os.Getenv("JWT_SECRET")), nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	claims := parsed.Claims.(jwt.MapClaims)
+
+	return &dto.ClaimsJWT{
+		Sub: claims["sub"].(string),
+	}, nil
 }

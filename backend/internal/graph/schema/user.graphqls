@@ -1,0 +1,17 @@
+type User {
+  id: String!
+  name: String!
+  email: String!
+  role: String!
+}
+
+
+type MeResponse {
+  success: Boolean!
+  message: String!
+  user: User
+}
+
+type Query {
+  me: MeResponse @auth(role:[All])
+}

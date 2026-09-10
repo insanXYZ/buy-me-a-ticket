@@ -1,0 +1,10 @@
+enum RegisterRole {
+  EventOrganizer
+  User
+}
+
+enum AuthRole {
+  All
+  EventOrganizer
+  User
+}

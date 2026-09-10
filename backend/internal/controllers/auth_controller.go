@@ -1,10 +1,14 @@
 package controllers
 
 import (
+	"buymeaticket-backend/internal/dto"
 	"buymeaticket-backend/internal/dto/message"
 	"buymeaticket-backend/internal/graph/model"
 	"buymeaticket-backend/internal/services"
+	"buymeaticket-backend/internal/utils"
 	"context"
+	"errors"
+	"net/http"
 )
 
 type AuthController struct {
@@ -18,6 +22,11 @@ func NewAuthController(authService *services.AuthService) *AuthController {
 }
 
 func (a *AuthController) Login(ctx context.Context, input *model.LoginInput) (*model.LoginResponse, error) {
+	writer, ok := utils.GetWriterRespCtx(ctx)
+	if !ok {
+		return nil, errors.New("server error")
+	}
+
 	token, err := a.authService.LoginHandler(ctx, input)
 
 	if err != nil {
@@ -26,6 +35,14 @@ func (a *AuthController) Login(ctx context.Context, input *model.LoginInput) (*m
 			Message: err.Error(),
 		}, nil
 	}
+
+	cookie := new(http.Cookie)
+	cookie.Value = token
+	cookie.Name = dto.HEADER_JWT_KEY
+	cookie.HttpOnly = true
+	cookie.Path = "/"
+
+	http.SetCookie(writer, cookie)
 
 	return &model.LoginResponse{
 		Message: message.SuccLogin,

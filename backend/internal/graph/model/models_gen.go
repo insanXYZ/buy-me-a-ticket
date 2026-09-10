@@ -20,6 +20,12 @@ type LoginResponse struct {
 	Token   *string `json:"token,omitempty"`
 }
 
+type MeResponse struct {
+	Success bool   `json:"success"`
+	Message string `json:"message"`
+	User    *User  `json:"user,omitempty"`
+}
+
 type Mutation struct {
 }
 
@@ -36,6 +42,70 @@ type RegisterInput struct {
 type RegisterResponse struct {
 	Success bool   `json:"success"`
 	Message string `json:"message"`
+}
+
+type User struct {
+	ID    string `json:"id"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
+	Role  string `json:"role"`
+}
+
+type AuthRole string
+
+const (
+	AuthRoleAll            AuthRole = "All"
+	AuthRoleEventOrganizer AuthRole = "EventOrganizer"
+	AuthRoleUser           AuthRole = "User"
+)
+
+var AllAuthRole = []AuthRole{
+	AuthRoleAll,
+	AuthRoleEventOrganizer,
+	AuthRoleUser,
+}
+
+func (e AuthRole) IsValid() bool {
+	switch e {
+	case AuthRoleAll, AuthRoleEventOrganizer, AuthRoleUser:
+		return true
+	}
+	return false
+}
+
+func (e AuthRole) String() string {
+	return string(e)
+}
+
+func (e *AuthRole) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = AuthRole(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid AuthRole", str)
+	}
+	return nil
+}
+
+func (e AuthRole) MarshalGQL(w io.Writer) {
+	_, _ = fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *AuthRole) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e AuthRole) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
 }
 
 type RegisterRole string

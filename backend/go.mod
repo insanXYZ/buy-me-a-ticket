@@ -13,6 +13,7 @@ require (
 	github.com/labstack/echo/v5 v5.3.1
 	github.com/vektah/gqlparser/v2 v2.5.37
 	golang.org/x/crypto v0.56.0
+	gorm.io/driver/postgres v1.6.2
 	gorm.io/gorm v1.31.2
 )
 
@@ -39,5 +40,4 @@ require (
 	golang.org/x/sys v0.47.0 // indirect
 	golang.org/x/text v0.41.0 // indirect
 	golang.org/x/tools v0.49.0 // indirect
-	gorm.io/driver/postgres v1.6.2 // indirect
 )

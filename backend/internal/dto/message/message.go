@@ -6,4 +6,5 @@ const (
 	ErrLogin             = "Email or password wrong"
 
 	SuccLogin = "Login successful"
+	SuccMe    = "Retrieve me successful"
 )

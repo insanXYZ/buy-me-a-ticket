@@ -21,7 +21,7 @@ func NewUserService(validator *validator.Validate, userRepository *repository.Us
 	}
 }
 
-func (u *UserService) MeHandler(ctx context.Context, claims dto.ClaimsJWT) (*entity.User, error) {
+func (u *UserService) MeHandler(ctx context.Context, claims *dto.ClaimsJWT) (*entity.User, error) {
 	id := claims.Sub
 
 	return u.userRepository.TakeByID(ctx, id)

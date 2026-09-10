@@ -25,7 +25,7 @@ func (r *Repository[T]) Tx(ctx context.Context, fn func(tx *gorm.DB) error) erro
 func (r *Repository[T]) TakeByID(ctx context.Context, id any) (*T, error) {
 	var dst T
 
-	err := r.db.WithContext(ctx).Take(dst, "id = ?", id).Error
+	err := r.db.WithContext(ctx).Take(&dst, "id = ?", id).Error
 
 	return &dst, err
 }

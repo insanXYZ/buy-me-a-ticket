@@ -38,6 +38,7 @@ func ParsingJWT(token string) (*dto.ClaimsJWT, error) {
 	claims := parsed.Claims.(jwt.MapClaims)
 
 	return &dto.ClaimsJWT{
-		Sub: claims["sub"].(string),
+		Sub:  claims["sub"].(string),
+		Role: claims["role"].(string),
 	}, nil
 }

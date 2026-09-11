@@ -9,6 +9,22 @@ import (
 	"strconv"
 )
 
+type CreateTicketInput struct {
+	CategoryID     int                   `json:"category_id"`
+	TicketDetail   *TicketDetailInput    `json:"ticket_detail"`
+	TicketVariants []*TicketVariantInput `json:"ticket_variants"`
+}
+
+type CreateTicketResponse struct {
+	Status  bool   `json:"status"`
+	Message string `json:"message"`
+}
+
+type DeleteTicketResponse struct {
+	Status  bool   `json:"status"`
+	Message string `json:"message"`
+}
+
 type LoginInput struct {
 	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required,gte=8"`
@@ -44,8 +60,74 @@ type RegisterResponse struct {
 	Message string `json:"message"`
 }
 
+type Ticket struct {
+	ID             int              `json:"id"`
+	CategoryTicket *TicketCategory  `json:"category_ticket"`
+	Organizer      *User            `json:"organizer"`
+	TicketDetail   *TicketDetail    `json:"ticket_detail"`
+	TicketVariants []*TicketVariant `json:"ticket_variants"`
+}
+
+type TicketCategory struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+}
+
+type TicketDetail struct {
+	ID               int    `json:"id"`
+	Title            string `json:"title"`
+	Slug             string `json:"slug"`
+	Description      string `json:"description"`
+	Location         string `json:"location"`
+	EventDate        string `json:"event_date"`
+	EventStartTime   string `json:"event_start_time"`
+	EventEndTime     string `json:"event_end_time"`
+	TermAndCondition string `json:"term_and_condition"`
+}
+
+type TicketDetailInput struct {
+	ID               int    `json:"id"`
+	Title            string `json:"title"`
+	Slug             string `json:"slug"`
+	Description      string `json:"description"`
+	Location         string `json:"location"`
+	EventDate        string `json:"event_date"`
+	EventStartTime   string `json:"event_start_time"`
+	EventEndTime     string `json:"event_end_time"`
+	TermAndCondition string `json:"term_and_condition"`
+}
+
+type TicketVariant struct {
+	ID     int      `json:"id"`
+	Name   string   `json:"name"`
+	Price  int      `json:"price"`
+	Perks  []string `json:"perks"`
+	Quota  int      `json:"quota"`
+	Active bool     `json:"active"`
+}
+
+type TicketVariantInput struct {
+	ID     int      `json:"id"`
+	Name   string   `json:"name"`
+	Price  int      `json:"price"`
+	Perks  []string `json:"perks"`
+	Quota  int      `json:"quota"`
+	Active bool     `json:"active"`
+}
+
+type UpdateTicketInput struct {
+	CategoryID     int                   `json:"category_id"`
+	TicketDetail   *TicketDetailInput    `json:"ticket_detail"`
+	TicketVariants []*TicketVariantInput `json:"ticket_variants"`
+}
+
+type UpdateTicketResponse struct {
+	Status  bool   `json:"status"`
+	Message string `json:"message"`
+}
+
 type User struct {
-	ID    string `json:"id"`
+	ID    int    `json:"id"`
 	Name  string `json:"name"`
 	Email string `json:"email"`
 	Role  string `json:"role"`

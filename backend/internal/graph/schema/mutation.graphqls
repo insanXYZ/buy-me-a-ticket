@@ -1,0 +1,9 @@
+type Mutation {
+  login(input: LoginInput!): LoginResponse
+  register(input: RegisterInput!): RegisterResponse
+
+  ticketCreate(input: CreateTicketInput!): CreateTicketResponse @auth(role:[EventOrganizer])
+  ticketUpdate(input: UpdateTicketInput!, ticket_id: Int!): UpdateTicketResponse @auth(role:[EventOrganizer])
+  ticketDelete(ticket_id: Int!): DeleteTicketResponse @auth(role:[EventOrganizer])
+}
+

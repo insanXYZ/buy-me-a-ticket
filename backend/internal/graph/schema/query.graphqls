@@ -1,0 +1,7 @@
+type Query {
+  me: MeResponse @auth(role:[All])
+
+  tickets: [Ticket!]!
+  ticket(slug: String!): Ticket
+  ticketSearch(slug: String!): Ticket
+}

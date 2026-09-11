@@ -13,7 +13,6 @@ import (
 	"time"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -98,7 +97,6 @@ func (a *AuthService) RegisterHandler(ctx context.Context, input *model.Register
 	}
 
 	newUser := &entity.User{
-		ID:       uuid.NewString(),
 		Name:     input.Name,
 		Email:    input.Email,
 		Password: passwordCrypt,

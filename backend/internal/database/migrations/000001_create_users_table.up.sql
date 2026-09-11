@@ -1,6 +1,5 @@
 BEGIN;
 
-
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -10,7 +9,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TABLE IF NOT EXISTS users (
-  id VARCHAR(100) NOT NULL,
+  id SERIAL NOT NULL,
   name VARCHAR(25) NOT NULL,
   email VARCHAR(25) NOT NULL,
   password VARCHAR(100) NOT NULL,
@@ -30,5 +29,3 @@ FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column();
 
 COMMIT;
-
-

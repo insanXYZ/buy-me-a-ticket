@@ -1,0 +1,81 @@
+type TicketCategory {
+  id: Int!
+  name: String!
+}
+
+type TicketDetail {
+  id: Int!
+  title: String!
+  slug: String!
+  description: String!
+  location: String!
+  event_date: String!
+  event_start_time: String!
+  event_end_time: String!
+  term_and_condition: String!
+}
+
+type TicketVariant {
+  id: Int!
+  name: String!
+  price: Int!
+  perks: [String!]!
+  quota: Int!
+  active: Boolean!
+}
+
+type Ticket {
+  id: Int!
+  category_ticket: TicketCategory!
+  organizer: User!
+  ticket_detail: TicketDetail!
+  ticket_variants: [TicketVariant!]!
+}
+
+type CreateTicketResponse {
+  status: Boolean!
+  message: String!
+}
+
+input TicketDetailInput {
+  id: Int!
+  title: String!
+  slug: String!
+  description: String!
+  location: String!
+  event_date: String!
+  event_start_time: String!
+  event_end_time: String!
+  term_and_condition: String!
+}
+
+input TicketVariantInput {
+  id: Int!
+  name: String!
+  price: Int!
+  perks: [String!]!
+  quota: Int!
+  active: Boolean!
+}
+
+input CreateTicketInput {
+  category_id: Int!
+  ticket_detail: TicketDetailInput!
+  ticket_variants: [TicketVariantInput!]!
+}
+
+type UpdateTicketResponse {
+  status: Boolean!
+  message: String!
+}
+
+input UpdateTicketInput {
+  category_id: Int!
+  ticket_detail: TicketDetailInput!
+  ticket_variants: [TicketVariantInput!]!
+}
+
+type DeleteTicketResponse {
+  status: Boolean!
+  message: String!
+}

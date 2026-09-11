@@ -127,7 +127,7 @@ model:
 # enable_model_json_omitzero_tag: false
 
 # Optional: set to speed up generation time by not performing a final validation pass.
-# skip_validation: true
+skip_validation: true
 
 # Optional: set to skip running `go mod tidy` when generating server code
 # skip_mod_tidy: true
@@ -192,8 +192,8 @@ models:
   # do not need to worry about interoperability and only expect small numbers.
   Int:
     model:
-      - github.com/99designs/gqlgen/graphql.Int32
-  Int64:
-    model:
       - github.com/99designs/gqlgen/graphql.Int
-      - github.com/99designs/gqlgen/graphql.Int64
+  # Int64:
+  #   model:
+  #     - github.com/99designs/gqlgen/graphql.Int
+      # - github.com/99designs/gqlgen/graphql.Int64

@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"buymeaticket-backend/internal/dto/message"
 	"buymeaticket-backend/internal/graph/model"
 	"buymeaticket-backend/internal/services"
 	"context"
@@ -14,6 +15,21 @@ func NewTicketController(ticketService *services.TicketService) *TicketControlle
 	return &TicketController{
 		ticketService: ticketService,
 	}
+}
+
+func (t *TicketController) TicketCategoryCreate(ctx context.Context, input model.CreateTicketCategoryInput) (*model.CreateTicketCategoryResponse, error) {
+	err := t.ticketService.CreateTicketCategoryHandler(ctx, &input)
+	if err != nil {
+		return &model.CreateTicketCategoryResponse{
+			Status:  false,
+			Message: err.Error(),
+		}, nil
+	}
+
+	return &model.CreateTicketCategoryResponse{
+		Status:  true,
+		Message: message.SuccTicketCategoryCreated,
+	}, nil
 }
 
 func (t *TicketController) TicketCreate(ctx context.Context, input model.CreateTicketInput) (*model.CreateTicketResponse, error) {

@@ -5,6 +5,7 @@ enum RegisterRole {
 
 enum AuthRole {
   All
+  SuperAdmin
   EventOrganizer
   User
 }

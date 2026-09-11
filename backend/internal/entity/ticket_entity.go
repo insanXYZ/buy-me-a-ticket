@@ -50,6 +50,15 @@ func (TicketDetail) TableName() string {
 }
 
 type TicketVariant struct {
+	ID        int          `gorm:"primaryKey;column:id"`
+	TicketID  int          `gorm:"column:ticket_id"`
+	Name      string       `gorm:"column:name"`
+	Price     int          `gorm:"column:price"`
+	Perks     []string     `gorm:"column:perks"`
+	Quota     int          `gorm:"column:quota"`
+	Active    bool         `gorm:"column:active"`
+	CreatedAt time.Time    `gorm:"column:created_at"`
+	UpdatedAt sql.NullTime `gorm:"column:updated_at"`
 }
 
 func (TicketVariant) TableName() string {

@@ -38,6 +38,11 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	CreateTicketCategoryResponse struct {
+		Message func(childComplexity int) int
+		Status  func(childComplexity int) int
+	}
+
 	CreateTicketResponse struct {
 		Message func(childComplexity int) int
 		Status  func(childComplexity int) int
@@ -61,11 +66,12 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		Login        func(childComplexity int, input model.LoginInput) int
-		Register     func(childComplexity int, input model.RegisterInput) int
-		TicketCreate func(childComplexity int, input model.CreateTicketInput) int
-		TicketDelete func(childComplexity int, ticketID int) int
-		TicketUpdate func(childComplexity int, input model.UpdateTicketInput, ticketID int) int
+		Login                func(childComplexity int, input model.LoginInput) int
+		Register             func(childComplexity int, input model.RegisterInput) int
+		TicketCategoryCreate func(childComplexity int, input model.CreateTicketCategoryInput) int
+		TicketCreate         func(childComplexity int, input model.CreateTicketInput) int
+		TicketDelete         func(childComplexity int, ticketID int) int
+		TicketUpdate         func(childComplexity int, input model.UpdateTicketInput, ticketID int) int
 	}
 
 	Query struct {
@@ -137,6 +143,7 @@ type MutationResolver interface {
 	TicketCreate(ctx context.Context, input model.CreateTicketInput) (*model.CreateTicketResponse, error)
 	TicketUpdate(ctx context.Context, input model.UpdateTicketInput, ticketID int) (*model.UpdateTicketResponse, error)
 	TicketDelete(ctx context.Context, ticketID int) (*model.DeleteTicketResponse, error)
+	TicketCategoryCreate(ctx context.Context, input model.CreateTicketCategoryInput) (*model.CreateTicketCategoryResponse, error)
 }
 type QueryResolver interface {
 	Me(ctx context.Context) (*model.MeResponse, error)
@@ -162,6 +169,19 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 	ec := newExecutionContext(nil, e, nil)
 	_ = ec
 	switch typeName + "." + field {
+
+	case "CreateTicketCategoryResponse.message":
+		if e.ComplexityRoot.CreateTicketCategoryResponse.Message == nil {
+			break
+		}
+
+		return e.ComplexityRoot.CreateTicketCategoryResponse.Message(childComplexity), true
+	case "CreateTicketCategoryResponse.status":
+		if e.ComplexityRoot.CreateTicketCategoryResponse.Status == nil {
+			break
+		}
+
+		return e.ComplexityRoot.CreateTicketCategoryResponse.Status(childComplexity), true
 
 	case "CreateTicketResponse.message":
 		if e.ComplexityRoot.CreateTicketResponse.Message == nil {
@@ -249,6 +269,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Mutation.Register(childComplexity, args["input"].(model.RegisterInput)), true
+	case "Mutation.ticketCategoryCreate":
+		if e.ComplexityRoot.Mutation.TicketCategoryCreate == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_ticketCategoryCreate_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Mutation.TicketCategoryCreate(childComplexity, args["input"].(model.CreateTicketCategoryInput)), true
 	case "Mutation.ticketCreate":
 		if e.ComplexityRoot.Mutation.TicketCreate == nil {
 			break
@@ -513,6 +544,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	opCtx := graphql.GetOperationContext(ctx)
 	ec := newExecutionContext(opCtx, e, make(chan graphql.DeferredResult))
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
+		ec.unmarshalInputCreateTicketCategoryInput,
 		ec.unmarshalInputCreateTicketInput,
 		ec.unmarshalInputLoginInput,
 		ec.unmarshalInputRegisterInput,
@@ -618,6 +650,16 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 // childFields_* functions provide shared child field context lookups.
 // Each function is generated once per unique object type, deduplicating the
 // switch statements that were previously inlined in every fieldContext_* function.
+
+func (ec *executionContext) childFields_CreateTicketCategoryResponse(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+	switch field.Name {
+	case "status":
+		return ec.fieldContext_CreateTicketCategoryResponse_status(ctx, field)
+	case "message":
+		return ec.fieldContext_CreateTicketCategoryResponse_message(ctx, field)
+	}
+	return nil, fmt.Errorf("no field named %q was found under type CreateTicketCategoryResponse", field.Name)
+}
 
 func (ec *executionContext) childFields_CreateTicketResponse(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 	switch field.Name {
@@ -923,6 +965,20 @@ func (ec *executionContext) field_Mutation_register_args(ctx context.Context, ra
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_ticketCategoryCreate_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input",
+		func(ctx context.Context, v any) (model.CreateTicketCategoryInput, error) {
+			return ec.unmarshalNCreateTicketCategoryInput2buymeaticketᚑbackendᚋinternalᚋgraphᚋmodelᚐCreateTicketCategoryInput(ctx, v)
+		})
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_ticketCreate_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -1074,6 +1130,52 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 // endregion ***************************** args.gotpl *****************************
 
 // region    **************************** field.gotpl *****************************
+
+func (ec *executionContext) _CreateTicketCategoryResponse_status(ctx context.Context, field graphql.CollectedField, obj *model.CreateTicketCategoryResponse) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_CreateTicketCategoryResponse_status(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Status, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v bool) graphql.Marshaler {
+			return ec.marshalNBoolean2bool(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_CreateTicketCategoryResponse_status(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("CreateTicketCategoryResponse", field, false, false, errors.New("field of type Boolean does not have child fields"))
+}
+
+func (ec *executionContext) _CreateTicketCategoryResponse_message(ctx context.Context, field graphql.CollectedField, obj *model.CreateTicketCategoryResponse) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_CreateTicketCategoryResponse_message(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Message, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
+			return ec.marshalNString2string(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_CreateTicketCategoryResponse_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("CreateTicketCategoryResponse", field, false, false, errors.New("field of type String does not have child fields"))
+}
 
 func (ec *executionContext) _CreateTicketResponse_status(ctx context.Context, field graphql.CollectedField, obj *model.CreateTicketResponse) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
@@ -1582,6 +1684,68 @@ func (ec *executionContext) fieldContext_Mutation_ticketDelete(ctx context.Conte
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_ticketDelete_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_ticketCategoryCreate(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Mutation_ticketCategoryCreate(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Mutation().TicketCategoryCreate(ctx, fc.Args["input"].(model.CreateTicketCategoryInput))
+		},
+		func(ctx context.Context, next graphql.Resolver) graphql.Resolver {
+			directive0 := next
+
+			directive1 := func(ctx context.Context) (any, error) {
+				role, err := ec.unmarshalNAuthRole2ᚕbuymeaticketᚑbackendᚋinternalᚋgraphᚋmodelᚐAuthRoleᚄ(ctx, []any{"Admin"})
+				if err != nil {
+					var zeroVal *model.CreateTicketCategoryResponse
+					return zeroVal, err
+				}
+				if ec.Directives.Auth == nil {
+					var zeroVal *model.CreateTicketCategoryResponse
+					return zeroVal, errors.New("directive auth is not implemented")
+				}
+				return ec.Directives.Auth(ctx, nil, directive0, role)
+			}
+
+			next = directive1
+			return next
+		},
+		func(ctx context.Context, selections ast.SelectionSet, v *model.CreateTicketCategoryResponse) graphql.Marshaler {
+			return ec.marshalOCreateTicketCategoryResponse2ᚖbuymeaticketᚑbackendᚋinternalᚋgraphᚋmodelᚐCreateTicketCategoryResponse(ctx, selections, v)
+		},
+		true,
+		false,
+	)
+}
+func (ec *executionContext) fieldContext_Mutation_ticketCategoryCreate(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.childFields_CreateTicketCategoryResponse(ctx, field)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_ticketCategoryCreate_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -3619,6 +3783,36 @@ func (ec *executionContext) fieldContext___Type_isOneOf(_ context.Context, field
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputCreateTicketCategoryInput(ctx context.Context, obj any) (model.CreateTicketCategoryInput, error) {
+	var it model.CreateTicketCategoryInput
+	if obj == nil {
+		return it, nil
+	}
+
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"name"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "name":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Name = data
+		}
+	}
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputCreateTicketInput(ctx context.Context, obj any) (model.CreateTicketInput, error) {
 	var it model.CreateTicketInput
 	if obj == nil {
@@ -3762,7 +3956,7 @@ func (ec *executionContext) unmarshalInputTicketDetailInput(ctx context.Context,
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"id", "title", "slug", "description", "location", "event_date", "event_start_time", "event_end_time", "term_and_condition"}
+	fieldsInOrder := [...]string{"id", "title", "description", "location", "event_date", "event_start_time", "event_end_time", "term_and_condition"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -3783,13 +3977,6 @@ func (ec *executionContext) unmarshalInputTicketDetailInput(ctx context.Context,
 				return it, err
 			}
 			it.Title = data
-		case "slug":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("slug"))
-			data, err := ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Slug = data
 		case "description":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
 			data, err := ec.unmarshalNString2string(ctx, v)
@@ -3848,20 +4035,13 @@ func (ec *executionContext) unmarshalInputTicketVariantInput(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"id", "name", "price", "perks", "quota", "active"}
+	fieldsInOrder := [...]string{"name", "price", "perks", "quota", "active"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "id":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			data, err := ec.unmarshalNInt2int(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.ID = data
 		case "name":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
 			data, err := ec.unmarshalNString2string(ctx, v)
@@ -3953,6 +4133,49 @@ func (ec *executionContext) unmarshalInputUpdateTicketInput(ctx context.Context,
 // endregion ************************** interface.gotpl ***************************
 
 // region    **************************** object.gotpl ****************************
+
+var createTicketCategoryResponseImplementors = []string{"CreateTicketCategoryResponse"}
+
+func (ec *executionContext) _CreateTicketCategoryResponse(ctx context.Context, sel ast.SelectionSet, obj *model.CreateTicketCategoryResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, createTicketCategoryResponseImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferredFieldSet := graphql.NewFieldSet(nil)
+	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CreateTicketCategoryResponse")
+		case "status":
+			out.Values[i] = ec._CreateTicketCategoryResponse_status(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "message":
+			out.Values[i] = ec._CreateTicketCategoryResponse_message(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
+
+	ec.ProcessDeferredGroup(graphql.DeferredGroup{
+		Defers:   deferLabelToView,
+		Path:     graphql.GetPath(ctx),
+		FieldSet: deferredFieldSet,
+		Context:  ctx,
+	})
+
+	return out
+}
 
 var createTicketResponseImplementors = []string{"CreateTicketResponse"}
 
@@ -4187,6 +4410,13 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		case "ticketDelete":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_ticketDelete(ctx, field)
+			})
+			if out.Values[i] == graphql.RequiredNull {
+				out.Invalids++
+			}
+		case "ticketCategoryCreate":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_ticketCategoryCreate(ctx, field)
 			})
 			if out.Values[i] == graphql.RequiredNull {
 				out.Invalids++
@@ -5184,6 +5414,11 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
+func (ec *executionContext) unmarshalNCreateTicketCategoryInput2buymeaticketᚑbackendᚋinternalᚋgraphᚋmodelᚐCreateTicketCategoryInput(ctx context.Context, v any) (model.CreateTicketCategoryInput, error) {
+	res, err := ec.unmarshalInputCreateTicketCategoryInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNCreateTicketInput2buymeaticketᚑbackendᚋinternalᚋgraphᚋmodelᚐCreateTicketInput(ctx context.Context, v any) (model.CreateTicketInput, error) {
 	res, err := ec.unmarshalInputCreateTicketInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -5549,6 +5784,13 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	_ = ctx
 	res := graphql.MarshalBoolean(*v)
 	return res
+}
+
+func (ec *executionContext) marshalOCreateTicketCategoryResponse2ᚖbuymeaticketᚑbackendᚋinternalᚋgraphᚋmodelᚐCreateTicketCategoryResponse(ctx context.Context, sel ast.SelectionSet, v *model.CreateTicketCategoryResponse) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._CreateTicketCategoryResponse(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOCreateTicketResponse2ᚖbuymeaticketᚑbackendᚋinternalᚋgraphᚋmodelᚐCreateTicketResponse(ctx context.Context, sel ast.SelectionSet, v *model.CreateTicketResponse) graphql.Marshaler {

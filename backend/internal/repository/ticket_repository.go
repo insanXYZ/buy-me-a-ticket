@@ -8,14 +8,16 @@ import (
 
 type TicketRepository struct {
 	Repository[entity.Ticket]
-	db *gorm.DB
 }
 
 func NewTicketRepository(db *gorm.DB) *TicketRepository {
 	return &TicketRepository{
-		db: db,
-		Repository: Repository[entity.Ticket]{
+		Repository[entity.Ticket]{
 			db: db,
 		},
 	}
+}
+
+func (t *TicketRepository) WithTx(tx *gorm.DB) *TicketRepository {
+	return NewTicketRepository(tx)
 }

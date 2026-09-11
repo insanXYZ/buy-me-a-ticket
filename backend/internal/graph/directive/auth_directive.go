@@ -11,9 +11,9 @@ import (
 )
 
 func AuthDirective(ctx context.Context, obj any, next graphql.Resolver, role []model.AuthRole) (res any, err error) {
-	user, ok := utils.GetUserCtx(ctx)
-	if !ok {
-		return nil, errors.New("Unauthorized")
+	user, err := utils.GetUserCtx(ctx)
+	if err != nil {
+		return nil, err
 	}
 
 	if slices.Contains(role, model.AuthRoleAll) {

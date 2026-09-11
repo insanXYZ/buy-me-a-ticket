@@ -9,10 +9,19 @@ import (
 	"strconv"
 )
 
+type CreateTicketCategoryInput struct {
+	Name string `json:"name" validate:"required,gte=3"`
+}
+
+type CreateTicketCategoryResponse struct {
+	Status  bool   `json:"status"`
+	Message string `json:"message"`
+}
+
 type CreateTicketInput struct {
-	CategoryID     int                   `json:"category_id"`
-	TicketDetail   *TicketDetailInput    `json:"ticket_detail"`
-	TicketVariants []*TicketVariantInput `json:"ticket_variants"`
+	CategoryID     int                   `json:"category_id" validate:"required,gte=0"`
+	TicketDetail   *TicketDetailInput    `json:"ticket_detail" validate:"required"`
+	TicketVariants []*TicketVariantInput `json:"ticket_variants" validate:"required,dive,required"`
 }
 
 type CreateTicketResponse struct {
@@ -86,15 +95,14 @@ type TicketDetail struct {
 }
 
 type TicketDetailInput struct {
-	ID               int    `json:"id"`
-	Title            string `json:"title"`
-	Slug             string `json:"slug"`
-	Description      string `json:"description"`
-	Location         string `json:"location"`
-	EventDate        string `json:"event_date"`
-	EventStartTime   string `json:"event_start_time"`
-	EventEndTime     string `json:"event_end_time"`
-	TermAndCondition string `json:"term_and_condition"`
+	ID               int    `json:"id" validate:"required"`
+	Title            string `json:"title" validate:"required,gte=8"`
+	Description      string `json:"description" validate:"required,gte=10"`
+	Location         string `json:"location" validate:"required,gte=3"`
+	EventDate        string `json:"event_date" validate:"required"`
+	EventStartTime   string `json:"event_start_time" validate:"required"`
+	EventEndTime     string `json:"event_end_time" validate:"required"`
+	TermAndCondition string `json:"term_and_condition" validate:"required"`
 }
 
 type TicketVariant struct {
@@ -107,18 +115,17 @@ type TicketVariant struct {
 }
 
 type TicketVariantInput struct {
-	ID     int      `json:"id"`
-	Name   string   `json:"name"`
-	Price  int      `json:"price"`
-	Perks  []string `json:"perks"`
-	Quota  int      `json:"quota"`
+	Name   string   `json:"name" validate:"required,gte=3"`
+	Price  int      `json:"price" validate:"required,gte=0"`
+	Perks  []string `json:"perks" validate:"required"`
+	Quota  int      `json:"quota" validate:"required,gte=0"`
 	Active bool     `json:"active"`
 }
 
 type UpdateTicketInput struct {
-	CategoryID     int                   `json:"category_id"`
-	TicketDetail   *TicketDetailInput    `json:"ticket_detail"`
-	TicketVariants []*TicketVariantInput `json:"ticket_variants"`
+	CategoryID     int                   `json:"category_id" validate:"required,gte=0"`
+	TicketDetail   *TicketDetailInput    `json:"ticket_detail" validate:"required,dive,required"`
+	TicketVariants []*TicketVariantInput `json:"ticket_variants" validate:"required,dive,required"`
 }
 
 type UpdateTicketResponse struct {
@@ -137,19 +144,21 @@ type AuthRole string
 
 const (
 	AuthRoleAll            AuthRole = "All"
+	AuthRoleSuperAdmin     AuthRole = "SuperAdmin"
 	AuthRoleEventOrganizer AuthRole = "EventOrganizer"
 	AuthRoleUser           AuthRole = "User"
 )
 
 var AllAuthRole = []AuthRole{
 	AuthRoleAll,
+	AuthRoleSuperAdmin,
 	AuthRoleEventOrganizer,
 	AuthRoleUser,
 }
 
 func (e AuthRole) IsValid() bool {
 	switch e {
-	case AuthRoleAll, AuthRoleEventOrganizer, AuthRoleUser:
+	case AuthRoleAll, AuthRoleSuperAdmin, AuthRoleEventOrganizer, AuthRoleUser:
 		return true
 	}
 	return false

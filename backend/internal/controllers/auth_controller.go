@@ -7,7 +7,6 @@ import (
 	"buymeaticket-backend/internal/services"
 	"buymeaticket-backend/internal/utils"
 	"context"
-	"errors"
 	"net/http"
 )
 
@@ -22,9 +21,9 @@ func NewAuthController(authService *services.AuthService) *AuthController {
 }
 
 func (a *AuthController) Login(ctx context.Context, input model.LoginInput) (*model.LoginResponse, error) {
-	writer, ok := utils.GetWriterRespCtx(ctx)
-	if !ok {
-		return nil, errors.New("server error")
+	writer, err := utils.GetWriterRespCtx(ctx)
+	if err != nil {
+		return nil, err
 	}
 
 	token, err := a.authService.LoginHandler(ctx, &input)

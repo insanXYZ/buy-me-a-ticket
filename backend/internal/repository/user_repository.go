@@ -9,13 +9,11 @@ import (
 
 type UserRepository struct {
 	Repository[entity.User]
-	db *gorm.DB
 }
 
 func NewUserRepository(db *gorm.DB) *UserRepository {
 	return &UserRepository{
-		db: db,
-		Repository: Repository[entity.User]{
+		Repository[entity.User]{
 			db: db,
 		},
 	}

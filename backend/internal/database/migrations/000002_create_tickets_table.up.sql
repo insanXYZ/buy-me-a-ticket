@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS tickets (
   category_ticket_id INTEGER NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMPTZ,
+  deleted_at TIMESTAMPTZ,
   PRIMARY KEY(id),
   FOREIGN KEY(user_id) REFERENCES users(id),
   FOREIGN KEY(category_ticket_id) REFERENCES ticket_categories(id)
@@ -25,6 +26,7 @@ CREATE TABLE IF NOT EXISTS ticket_details (
   slug VARCHAR(255) NOT NULL,
   description TEXT NOT NULL,
   location VARCHAR(255) NOT NULL,
+  line_ups VARCHAR(30) ARRAY NOT NULL,
   event_date DATE NOT NULL,
   event_start_time TIME NOT NULL,
   event_end_time TIME NOT NULL,

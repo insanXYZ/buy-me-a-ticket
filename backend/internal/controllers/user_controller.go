@@ -33,7 +33,7 @@ func (u *UserController) Me(ctx context.Context) (*model.MeResponse, error) {
 
 	return &model.MeResponse{
 		Success: true,
-		Message: message.SuccMe,
+		Message: message.SuccessMe,
 		User: &model.User{
 			ID:    user.ID,
 			Name:  user.Name,

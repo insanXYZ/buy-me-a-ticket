@@ -2,10 +2,12 @@ type Mutation {
   login(input: LoginInput!): LoginResponse
   register(input: RegisterInput!): RegisterResponse
 
-  ticketCreate(input: CreateTicketInput!): CreateTicketResponse @auth(role:[EventOrganizer])
-  ticketUpdate(input: UpdateTicketInput!, ticket_id: Int!): UpdateTicketResponse @auth(role:[EventOrganizer])
-  ticketDelete(ticket_id: Int!): DeleteTicketResponse @auth(role:[EventOrganizer])
+  createTicket(input: CreateTicketInput!): CreateTicketResponse @auth(role:[EventOrganizer])
+  updateTicket(input: UpdateTicketInput!, ticket_id: Int!): UpdateTicketResponse @auth(role:[EventOrganizer])
+  deleteTicket(ticket_id: Int!): DeleteTicketResponse @auth(role:[EventOrganizer])
 
-  ticketCategoryCreate(input: CreateTicketCategoryInput!): CreateTicketCategoryResponse @auth(role:[Admin])
+  createTicketCategory(input: CreateTicketCategoryInput!): CreateTicketCategoryResponse @auth(role:[SuperAdmin])
+  updateTicketCategory(input: UpdateTicketCategoryInput!, ticket_category_id: Int!): UpdateTicketCategoryResponse @auth(role:[SuperAdmin])
+  deleteTicketCategory(ticket_category_id: Int!): DeleteTicketCategoryResponse @auth(role:[SuperAdmin])
 }
 

@@ -18,7 +18,7 @@ func BaseGraphMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 			return next(c)
 		}
 
-		parsed, err := utils.ParsingJWT(cookie.Value)
+		parsed, err := utils.JWT.Parsing(cookie.Value)
 		if err != nil {
 			return next(c)
 		}

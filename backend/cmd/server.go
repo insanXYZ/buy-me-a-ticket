@@ -2,7 +2,10 @@ package main
 
 import (
 	"buymeaticket-backend/internal/app"
+	"buymeaticket-backend/internal/controllers"
 	"buymeaticket-backend/internal/database"
+	"buymeaticket-backend/internal/repository"
+	"buymeaticket-backend/internal/services"
 	"fmt"
 	"os"
 
@@ -33,7 +36,27 @@ func main() {
 	v := validator.New()
 	e := echo.New()
 
-	app.NewGraphHandler(e, v, db)
+	userRepository := repository.NewUserRepository(db)
+	ticketRepository := repository.NewTicketRepository(db)
+	ticketCategoryRepository := repository.NewTicketCategoryRepository(db)
+	ticketVariantRepository := repository.NewTicketVariantRepository(db)
+	ticketDetailRepository := repository.NewTicketDetailRepository(db)
+
+	userService := services.NewUserService(v, userRepository)
+	authService := services.NewAuthService(v, userRepository)
+	ticketService := services.NewTicketService(v, ticketRepository, ticketCategoryRepository, ticketVariantRepository, ticketDetailRepository)
+
+	userController := controllers.NewUserController(userService)
+	authController := controllers.NewAuthController(authService)
+	ticketController := controllers.NewTicketController(ticketService)
+
+	wrapController := controllers.WrapController{
+		AuthController:   authController,
+		TicketController: ticketController,
+		UserController:   userController,
+	}
+
+	app.NewGraphHandler(e, v, db, &wrapController)
 	app.NewRestHandler(e)
 
 	fmt.Printf("running server on port %v", port)

@@ -61,10 +61,9 @@ func (a *AuthService) LoginHandler(ctx context.Context, input *model.LoginInput)
 		claims := dto.ClaimsJWT{
 			Role: user.Role,
 			Sub:  user.ID,
-			Exp:  time.Now().Add(utils.LOGIN_EXP),
 		}
 
-		token, err = utils.BuildJWT(claims)
+		token, err = utils.JWT.SignedLogin(claims)
 		if err != nil {
 			return err
 		}

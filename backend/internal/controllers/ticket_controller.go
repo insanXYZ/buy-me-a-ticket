@@ -4,6 +4,7 @@ import (
 	"buymeaticket-backend/internal/dto/message"
 	"buymeaticket-backend/internal/graph/model"
 	"buymeaticket-backend/internal/services"
+	"buymeaticket-backend/internal/utils"
 	"context"
 )
 
@@ -17,7 +18,7 @@ func NewTicketController(ticketService *services.TicketService) *TicketControlle
 	}
 }
 
-func (t *TicketController) TicketCategoryCreate(ctx context.Context, input model.CreateTicketCategoryInput) (*model.CreateTicketCategoryResponse, error) {
+func (t *TicketController) CreateTicketCategory(ctx context.Context, input model.CreateTicketCategoryInput) (*model.CreateTicketCategoryResponse, error) {
 	err := t.ticketService.CreateTicketCategoryHandler(ctx, &input)
 	if err != nil {
 		return &model.CreateTicketCategoryResponse{
@@ -28,18 +29,107 @@ func (t *TicketController) TicketCategoryCreate(ctx context.Context, input model
 
 	return &model.CreateTicketCategoryResponse{
 		Status:  true,
-		Message: message.SuccTicketCategoryCreated,
+		Message: message.SuccessCreateTicketCategory,
 	}, nil
 }
 
-func (t *TicketController) TicketCreate(ctx context.Context, input model.CreateTicketInput) (*model.CreateTicketResponse, error) {
-	panic("not implemented") // TODO: Implement
+func (t *TicketController) UpdateTicketCategory(ctx context.Context, input model.UpdateTicketCategoryInput, ticketCategoryID int) (*model.UpdateTicketCategoryResponse, error) {
+	err := t.ticketService.UpdateTicketCategoryHandler(ctx, &input, ticketCategoryID)
+	if err != nil {
+		return &model.UpdateTicketCategoryResponse{
+			Status:  false,
+			Message: err.Error(),
+		}, nil
+	}
+
+	return &model.UpdateTicketCategoryResponse{
+		Status:  true,
+		Message: message.SuccessUpdateTicketCategory,
+	}, nil
 }
-func (t *TicketController) TicketUpdate(ctx context.Context, input model.UpdateTicketInput, ticketID int) (*model.UpdateTicketResponse, error) {
-	panic("not implemented") // TODO: Implement
+
+func (t *TicketController) DeleteTicketCategory(ctx context.Context, ticketCategoryID int) (*model.DeleteTicketCategoryResponse, error) {
+	err := t.ticketService.DeleteTicketCategoryHandler(ctx, ticketCategoryID)
+	if err != nil {
+		return &model.DeleteTicketCategoryResponse{
+			Status:  false,
+			Message: err.Error(),
+		}, nil
+	}
+
+	return &model.DeleteTicketCategoryResponse{
+		Status:  true,
+		Message: message.SuccessDeleteTicketCategory,
+	}, nil
 }
-func (t *TicketController) TicketDelete(ctx context.Context, ticketID int) (*model.DeleteTicketResponse, error) {
-	panic("not implemented") // TODO: Implement
+
+func (t *TicketController) CreateTicket(ctx context.Context, input model.CreateTicketInput) (*model.CreateTicketResponse, error) {
+	claims, err := utils.GetUserCtx(ctx)
+	if err != nil {
+		return &model.CreateTicketResponse{
+			Status:  false,
+			Message: err.Error(),
+		}, nil
+	}
+
+	err = t.ticketService.CreateTicketHandler(ctx, claims, &input)
+	if err != nil {
+		return &model.CreateTicketResponse{
+			Status:  false,
+			Message: err.Error(),
+		}, nil
+	}
+
+	return &model.CreateTicketResponse{
+		Status:  true,
+		Message: message.SuccessCreateTicket,
+	}, nil
+}
+
+func (t *TicketController) UpdateTicket(ctx context.Context, input model.UpdateTicketInput, ticketID int) (*model.UpdateTicketResponse, error) {
+	claims, err := utils.GetUserCtx(ctx)
+	if err != nil {
+		return &model.UpdateTicketResponse{
+			Status:  false,
+			Message: err.Error(),
+		}, nil
+	}
+
+	err = t.ticketService.UpdateTicketHandler(ctx, claims, ticketID, &input)
+	if err != nil {
+		return &model.UpdateTicketResponse{
+			Status:  false,
+			Message: err.Error(),
+		}, nil
+	}
+
+	return &model.UpdateTicketResponse{
+		Status:  true,
+		Message: message.SuccessUpdateTicket,
+	}, nil
+}
+
+func (t *TicketController) DeleteTicket(ctx context.Context, ticketID int) (*model.DeleteTicketResponse, error) {
+	claims, err := utils.GetUserCtx(ctx)
+	if err != nil {
+		return &model.DeleteTicketResponse{
+			Status:  false,
+			Message: err.Error(),
+		}, nil
+	}
+
+	err = t.ticketService.DeleteTicketHandler(ctx, claims, ticketID)
+	if err != nil {
+		return &model.DeleteTicketResponse{
+			Status:  false,
+			Message: err.Error(),
+		}, nil
+	}
+
+	return &model.DeleteTicketResponse{
+		Status:  true,
+		Message: message.SuccessDeleteTicket,
+	}, nil
 }
 
 func (t *TicketController) Tickets(ctx context.Context) ([]*model.Ticket, error) {

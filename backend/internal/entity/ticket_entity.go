@@ -3,6 +3,8 @@ package entity
 import (
 	"database/sql"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type TicketCategory struct {
@@ -17,14 +19,17 @@ func (TicketCategory) TableName() string {
 }
 
 type Ticket struct {
-	ID               int          `gorm:"primaryKey;column:id"`
-	UserID           int          `gorm:"column:user_id"`
-	CategoryTicketID int          `gorm:"column:category_ticket_id"`
-	CreatedAt        time.Time    `gorm:"column:created_at"`
-	UpdatedAt        sql.NullTime `gorm:"column:updated_at"`
+	ID               int            `gorm:"primaryKey;column:id"`
+	UserID           int            `gorm:"column:user_id"`
+	CategoryTicketID int            `gorm:"column:category_ticket_id"`
+	CreatedAt        time.Time      `gorm:"column:created_at"`
+	UpdatedAt        sql.NullTime   `gorm:"column:updated_at"`
+	DeletedAt        gorm.DeletedAt `gorm:"index"`
 
-	Category TicketCategory `gorm:"foreignKey:category_ticket_id;references:id"`
-	User     User           `gorm:"foreignKey:user_id;references:id"`
+	TicketDetail   TicketDetail    `gorm:"foreignKey:ticket_id;references:id"`
+	TicketCategory TicketCategory  `gorm:"foreignKey:category_ticket_id;references:id"`
+	TicketVariants []TicketVariant `gorm:"foreignKey:ticket_id;references:id"`
+	User           User            `gorm:"foreignKey:user_id;references:id"`
 }
 
 func (Ticket) TableName() string {
@@ -37,12 +42,15 @@ type TicketDetail struct {
 	Slug             string       `gorm:"column:slug"`
 	Description      string       `gorm:"column:description"`
 	Location         string       `gorm:"column:location"`
+	LineUps          []string     `gorm:"column:line_ups"`
 	EventDate        string       `gorm:"column:event_date"`
 	EventStartTime   string       `gorm:"column:event_start_time"`
 	EventEndTime     string       `gorm:"column:event_end_time"`
 	TermAndCondition string       `gorm:"column:term_and_condition"`
 	CreatedAt        time.Time    `gorm:"column:created_at"`
 	UpdatedAt        sql.NullTime `gorm:"column:updated_at"`
+
+	Ticket *Ticket `gorm:"foreignKey:ticket_id;references:id"`
 }
 
 func (TicketDetail) TableName() string {
@@ -59,6 +67,7 @@ type TicketVariant struct {
 	Active    bool         `gorm:"column:active"`
 	CreatedAt time.Time    `gorm:"column:created_at"`
 	UpdatedAt sql.NullTime `gorm:"column:updated_at"`
+	Ticket    Ticket       `gorm:"foreignKey:ticket_id;references:id"`
 }
 
 func (TicketVariant) TableName() string {

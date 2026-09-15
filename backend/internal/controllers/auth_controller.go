@@ -44,7 +44,7 @@ func (a *AuthController) Login(ctx context.Context, input model.LoginInput) (*mo
 	http.SetCookie(writer, cookie)
 
 	return &model.LoginResponse{
-		Message: message.SuccLogin,
+		Message: message.SuccessLogin,
 		Token:   &token,
 		Success: true,
 	}, nil

@@ -8,16 +8,23 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-const LOGIN_EXP = 24 * time.Hour
+var JWT jwtUtil
 
-func BuildJWT(claims dto.ClaimsJWT) (string, error) {
+func init() {
+	JWT = jwtUtil{
+		loginExp: 24 * time.Hour,
+	}
+}
 
+type jwtUtil struct {
+	loginExp time.Duration
+}
+
+func (j jwtUtil) SignedLogin(claims dto.ClaimsJWT) (string, error) {
 	secret := []byte(os.Getenv("JWT_SECRET"))
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"exp": jwt.NumericDate{
-			Time: claims.Exp,
-		},
+		"exp":  j.loginExp,
 		"role": claims.Role,
 		"sub":  claims.Sub,
 	})
@@ -26,7 +33,7 @@ func BuildJWT(claims dto.ClaimsJWT) (string, error) {
 
 }
 
-func ParsingJWT(token string) (*dto.ClaimsJWT, error) {
+func (jwtUtil) Parsing(token string) (*dto.ClaimsJWT, error) {
 	parsed, err := jwt.Parse(token, func(t *jwt.Token) (any, error) {
 		return []byte(os.Getenv("JWT_SECRET")), nil
 	})

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type Repository[T any] struct {
@@ -11,7 +12,7 @@ type Repository[T any] struct {
 }
 
 func (r *Repository[T]) Create(ctx context.Context, model *T) error {
-	return r.db.Create(model).Error
+	return r.db.WithContext(ctx).Create(model).Error
 }
 
 func (r *Repository[T]) UpdateById(ctx context.Context, id any, model *T) error {
@@ -28,4 +29,20 @@ func (r *Repository[T]) TakeByID(ctx context.Context, id any) (*T, error) {
 	err := r.db.WithContext(ctx).Take(&dst, "id = ?", id).Error
 
 	return &dst, err
+}
+
+func (r *Repository[T]) Save(ctx context.Context, model any) error {
+	return r.db.WithContext(ctx).Clauses(clause.OnConflict{
+		UpdateAll: true,
+	}).Create(model).Error
+}
+
+func (r *Repository[T]) DeleteByID(ctx context.Context, id any) error {
+	var model T
+	return r.db.WithContext(ctx).Delete(&model, "id = ?", id).Error
+}
+
+func (r *Repository[T]) DeleteByIDs(ctx context.Context, id any) error {
+	var model T
+	return r.db.WithContext(ctx).Delete(&model, id).Error
 }

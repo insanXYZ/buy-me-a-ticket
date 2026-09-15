@@ -21,10 +21,15 @@ type CreateTicketCategoryResponse struct {
 type CreateTicketInput struct {
 	CategoryID     int                   `json:"category_id" validate:"required,gte=0"`
 	TicketDetail   *TicketDetailInput    `json:"ticket_detail" validate:"required"`
-	TicketVariants []*TicketVariantInput `json:"ticket_variants" validate:"required,dive,required"`
+	TicketVariants []*TicketVariantInput `json:"ticket_variants" validate:"required,dive"`
 }
 
 type CreateTicketResponse struct {
+	Status  bool   `json:"status"`
+	Message string `json:"message"`
+}
+
+type DeleteTicketCategoryResponse struct {
 	Status  bool   `json:"status"`
 	Message string `json:"message"`
 }
@@ -95,14 +100,14 @@ type TicketDetail struct {
 }
 
 type TicketDetailInput struct {
-	ID               int    `json:"id" validate:"required"`
-	Title            string `json:"title" validate:"required,gte=8"`
-	Description      string `json:"description" validate:"required,gte=10"`
-	Location         string `json:"location" validate:"required,gte=3"`
-	EventDate        string `json:"event_date" validate:"required"`
-	EventStartTime   string `json:"event_start_time" validate:"required"`
-	EventEndTime     string `json:"event_end_time" validate:"required"`
-	TermAndCondition string `json:"term_and_condition" validate:"required"`
+	Title            string   `json:"title" validate:"required,gte=8"`
+	Description      string   `json:"description" validate:"required,gte=10"`
+	Location         string   `json:"location" validate:"required,gte=3"`
+	LineUps          []string `json:"line_ups" validate:"required,dive,required,gt=0"`
+	EventDate        string   `json:"event_date" validate:"required"`
+	EventStartTime   string   `json:"event_start_time" validate:"required"`
+	EventEndTime     string   `json:"event_end_time" validate:"required"`
+	TermAndCondition string   `json:"term_and_condition" validate:"required"`
 }
 
 type TicketVariant struct {
@@ -122,15 +127,33 @@ type TicketVariantInput struct {
 	Active bool     `json:"active"`
 }
 
+type UpdateTicketCategoryInput struct {
+	Name string `json:"name" validate:"required,gte=3"`
+}
+
+type UpdateTicketCategoryResponse struct {
+	Status  bool   `json:"status"`
+	Message string `json:"message"`
+}
+
 type UpdateTicketInput struct {
-	CategoryID     int                   `json:"category_id" validate:"required,gte=0"`
-	TicketDetail   *TicketDetailInput    `json:"ticket_detail" validate:"required,dive,required"`
-	TicketVariants []*TicketVariantInput `json:"ticket_variants" validate:"required,dive,required"`
+	CategoryID     int                         `json:"category_id" validate:"required,gte=0"`
+	TicketDetail   *TicketDetailInput          `json:"ticket_detail" validate:"required,dive,required"`
+	TicketVariants []*UpdateTicketVariantInput `json:"ticket_variants" validate:"required,dive,required"`
 }
 
 type UpdateTicketResponse struct {
 	Status  bool   `json:"status"`
 	Message string `json:"message"`
+}
+
+type UpdateTicketVariantInput struct {
+	ID     *int     `json:"id,omitempty" validate:"omitempty,gt=0"`
+	Name   string   `json:"name" validate:"required,gte=3"`
+	Price  int      `json:"price" validate:"required,gte=0"`
+	Perks  []string `json:"perks" validate:"required"`
+	Quota  int      `json:"quota" validate:"required,gte=0"`
+	Active bool     `json:"active"`
 }
 
 type User struct {

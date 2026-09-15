@@ -5,8 +5,6 @@ import (
 	"buymeaticket-backend/internal/graph"
 	"buymeaticket-backend/internal/graph/directive"
 	"buymeaticket-backend/internal/middleware"
-	"buymeaticket-backend/internal/repository"
-	"buymeaticket-backend/internal/services"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
@@ -19,23 +17,11 @@ import (
 	"gorm.io/gorm"
 )
 
-func NewGraphHandler(e *echo.Echo, validator *validator.Validate, gorm *gorm.DB) {
-
-	userRepository := repository.NewUserRepository(gorm)
-	ticketRepository := repository.NewTicketRepository(gorm)
-
-	userService := services.NewUserService(validator, userRepository)
-	authService := services.NewAuthService(validator, userRepository)
-	ticketService := services.NewTicketService(validator, ticketRepository)
-
-	userController := controllers.NewUserController(userService)
-	authController := controllers.NewAuthController(authService)
-	ticketController := controllers.NewTicketController(ticketService)
-
+func NewGraphHandler(e *echo.Echo, validator *validator.Validate, gorm *gorm.DB, controller *controllers.WrapController) {
 	resolver := &graph.Resolver{
-		AuthController:   authController,
-		UserController:   userController,
-		TicketController: ticketController,
+		AuthController:   controller.AuthController,
+		UserController:   controller.UserController,
+		TicketController: controller.TicketController,
 	}
 
 	config := graph.Config{

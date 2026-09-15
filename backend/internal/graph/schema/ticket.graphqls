@@ -38,10 +38,10 @@ type CreateTicketResponse {
 }
 
 input TicketDetailInput {
-  id: Int! @goTag(key:"validate",value:"required")
   title: String! @goTag(key:"validate",value:"required,gte=8")
   description: String! @goTag(key:"validate",value:"required,gte=10")
   location: String! @goTag(key:"validate",value:"required,gte=3")
+  line_ups: [String!]! @goTag(key:"validate" , value:"required,dive,required,gt=0")
   event_date: String! @goTag(key:"validate",value:"required")
   event_start_time: String! @goTag(key:"validate",value:"required")
   event_end_time: String! @goTag(key:"validate",value:"required")
@@ -56,10 +56,19 @@ input TicketVariantInput {
   active: Boolean!
 }
 
+input UpdateTicketVariantInput {
+  id: Int @goTag(key:"validate",value:"omitempty,gt=0")
+  name: String! @goTag(key:"validate",value:"required,gte=3")
+  price: Int! @goTag(key:"validate",value:"required,gte=0")
+  perks: [String!]! @goTag(key:"validate",value:"required")
+  quota: Int! @goTag(key:"validate",value:"required,gte=0")
+  active: Boolean!
+}
+
 input CreateTicketInput {
   category_id: Int! @goTag(key:"validate",value:"required,gte=0")
   ticket_detail: TicketDetailInput! @goTag(key:"validate",value:"required")
-  ticket_variants: [TicketVariantInput!]! @goTag(key:"validate",value:"required,dive,required")
+  ticket_variants: [TicketVariantInput!]! @goTag(key:"validate",value:"required,dive")
 }
 
 type UpdateTicketResponse {
@@ -70,7 +79,7 @@ type UpdateTicketResponse {
 input UpdateTicketInput {
   category_id: Int! @goTag(key:"validate",value:"required,gte=0")
   ticket_detail: TicketDetailInput! @goTag(key:"validate",value:"required,dive,required")
-  ticket_variants: [TicketVariantInput!]! @goTag(key:"validate",value:"required,dive,required")
+  ticket_variants: [UpdateTicketVariantInput!]! @goTag(key:"validate",value:"required,dive,required")
 }
 
 type DeleteTicketResponse {
@@ -86,3 +95,18 @@ type CreateTicketCategoryResponse {
   status: Boolean!
   message: String!
 }
+
+input UpdateTicketCategoryInput {
+  name: String! @goTag(key:"validate", value:"required,gte=3")
+}
+
+type UpdateTicketCategoryResponse {
+  status: Boolean!
+  message: String!
+}
+
+type DeleteTicketCategoryResponse {
+  status: Boolean!
+  message: String!
+}
+

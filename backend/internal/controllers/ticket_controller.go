@@ -133,13 +133,148 @@ func (t *TicketController) DeleteTicket(ctx context.Context, ticketID int) (*mod
 }
 
 func (t *TicketController) Tickets(ctx context.Context) ([]*model.Ticket, error) {
-	panic("not implemented") // TODO: Implement
+	tickets, err := t.ticketService.RetrieveTicketsHandler(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	resTickets := make([]*model.Ticket, len(tickets))
+
+	for i, ticket := range tickets {
+		modelTicket := &model.Ticket{
+			ID: ticket.ID,
+			CategoryTicket: &model.TicketCategory{
+				ID:   ticket.CategoryTicketID,
+				Name: ticket.TicketCategory.Name,
+			},
+			Organizer: &model.User{
+				ID:    ticket.User.ID,
+				Name:  ticket.User.Name,
+				Email: ticket.User.Email,
+				Role:  ticket.User.Role,
+			},
+			TicketDetail: &model.TicketDetail{
+				ID:               ticket.TicketDetail.ID,
+				Title:            ticket.TicketDetail.Title,
+				Slug:             ticket.TicketDetail.Slug,
+				Description:      ticket.TicketDetail.Description,
+				Location:         ticket.TicketDetail.Location,
+				EventDate:        ticket.TicketDetail.EventDate,
+				EventStartTime:   ticket.TicketDetail.EventStartTime,
+				EventEndTime:     ticket.TicketDetail.EventEndTime,
+				TermAndCondition: ticket.TicketDetail.TermAndCondition,
+			},
+		}
+
+		for _, variant := range ticket.TicketVariants {
+			modelTicket.TicketVariants = append(modelTicket.TicketVariants, &model.TicketVariant{
+				ID:     variant.ID,
+				Name:   variant.Name,
+				Price:  variant.Price,
+				Perks:  variant.Perks,
+				Quota:  variant.Quota,
+				Active: variant.Active,
+			})
+		}
+
+		resTickets[i] = modelTicket
+	}
+
+	return resTickets, nil
 }
 
 func (t *TicketController) Ticket(ctx context.Context, slug string) (*model.Ticket, error) {
-	panic("not implemented") // TODO: Implement
+	ticket, err := t.ticketService.RetrieveTicketWithSlugHandler(ctx, slug)
+	if err != nil {
+		return nil, err
+	}
+
+	modelTicket := &model.Ticket{
+		ID: ticket.ID,
+		CategoryTicket: &model.TicketCategory{
+			ID:   ticket.CategoryTicketID,
+			Name: ticket.TicketCategory.Name,
+		},
+		Organizer: &model.User{
+			ID:    ticket.User.ID,
+			Name:  ticket.User.Name,
+			Email: ticket.User.Email,
+			Role:  ticket.User.Role,
+		},
+		TicketDetail: &model.TicketDetail{
+			ID:               ticket.TicketDetail.ID,
+			Title:            ticket.TicketDetail.Title,
+			Slug:             ticket.TicketDetail.Slug,
+			Description:      ticket.TicketDetail.Description,
+			Location:         ticket.TicketDetail.Location,
+			EventDate:        ticket.TicketDetail.EventDate,
+			EventStartTime:   ticket.TicketDetail.EventStartTime,
+			EventEndTime:     ticket.TicketDetail.EventEndTime,
+			TermAndCondition: ticket.TicketDetail.TermAndCondition,
+		},
+	}
+
+	for _, variant := range ticket.TicketVariants {
+		modelTicket.TicketVariants = append(modelTicket.TicketVariants, &model.TicketVariant{
+			ID:     variant.ID,
+			Name:   variant.Name,
+			Price:  variant.Price,
+			Perks:  variant.Perks,
+			Quota:  variant.Quota,
+			Active: variant.Active,
+		})
+	}
+
+	return modelTicket, nil
 }
 
-func (t *TicketController) TicketSearch(ctx context.Context, slug string) (*model.Ticket, error) {
-	panic("not implemented") // TODO: Implement
+func (t *TicketController) TicketSearch(ctx context.Context, search string) ([]*model.Ticket, error) {
+	tickets, err := t.ticketService.SerachTicketsHandler(ctx, search)
+	if err != nil {
+		return nil, err
+	}
+
+	resTickets := make([]*model.Ticket, len(tickets))
+
+	for i, ticket := range tickets {
+		modelTicket := &model.Ticket{
+			ID: ticket.ID,
+			CategoryTicket: &model.TicketCategory{
+				ID:   ticket.CategoryTicketID,
+				Name: ticket.TicketCategory.Name,
+			},
+			Organizer: &model.User{
+				ID:    ticket.User.ID,
+				Name:  ticket.User.Name,
+				Email: ticket.User.Email,
+				Role:  ticket.User.Role,
+			},
+			TicketDetail: &model.TicketDetail{
+				ID:               ticket.TicketDetail.ID,
+				Title:            ticket.TicketDetail.Title,
+				Slug:             ticket.TicketDetail.Slug,
+				Description:      ticket.TicketDetail.Description,
+				Location:         ticket.TicketDetail.Location,
+				EventDate:        ticket.TicketDetail.EventDate,
+				EventStartTime:   ticket.TicketDetail.EventStartTime,
+				EventEndTime:     ticket.TicketDetail.EventEndTime,
+				TermAndCondition: ticket.TicketDetail.TermAndCondition,
+			},
+		}
+
+		for _, variant := range ticket.TicketVariants {
+			modelTicket.TicketVariants = append(modelTicket.TicketVariants, &model.TicketVariant{
+				ID:     variant.ID,
+				Name:   variant.Name,
+				Price:  variant.Price,
+				Perks:  variant.Perks,
+				Quota:  variant.Quota,
+				Active: variant.Active,
+			})
+		}
+
+		resTickets[i] = modelTicket
+	}
+
+	return resTickets, nil
 }

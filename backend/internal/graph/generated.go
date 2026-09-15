@@ -84,7 +84,7 @@ type ComplexityRoot struct {
 	Query struct {
 		Me           func(childComplexity int) int
 		Ticket       func(childComplexity int, slug string) int
-		TicketSearch func(childComplexity int, slug string) int
+		TicketSearch func(childComplexity int, search string) int
 		Tickets      func(childComplexity int) int
 	}
 
@@ -163,7 +163,7 @@ type QueryResolver interface {
 	Me(ctx context.Context) (*model.MeResponse, error)
 	Tickets(ctx context.Context) ([]*model.Ticket, error)
 	Ticket(ctx context.Context, slug string) (*model.Ticket, error)
-	TicketSearch(ctx context.Context, slug string) (*model.Ticket, error)
+	TicketSearch(ctx context.Context, search string) ([]*model.Ticket, error)
 }
 
 // endregion ************************** generated!.gotpl **************************
@@ -390,7 +390,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.ComplexityRoot.Query.TicketSearch(childComplexity, args["slug"].(string)), true
+		return e.ComplexityRoot.Query.TicketSearch(childComplexity, args["search"].(string)), true
 	case "Query.tickets":
 		if e.ComplexityRoot.Query.Tickets == nil {
 			break
@@ -1166,14 +1166,14 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 func (ec *executionContext) field_Query_ticketSearch_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "slug",
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "search",
 		func(ctx context.Context, v any) (string, error) {
 			return ec.unmarshalNString2string(ctx, v)
 		})
 	if err != nil {
 		return nil, err
 	}
-	args["slug"] = arg0
+	args["search"] = arg0
 	return args, nil
 }
 
@@ -2178,14 +2178,14 @@ func (ec *executionContext) _Query_ticketSearch(ctx context.Context, field graph
 		},
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.Resolvers.Query().TicketSearch(ctx, fc.Args["slug"].(string))
+			return ec.Resolvers.Query().TicketSearch(ctx, fc.Args["search"].(string))
 		},
 		nil,
-		func(ctx context.Context, selections ast.SelectionSet, v *model.Ticket) graphql.Marshaler {
-			return ec.marshalOTicket2ᚖbuymeaticketᚑbackendᚋinternalᚋgraphᚋmodelᚐTicket(ctx, selections, v)
+		func(ctx context.Context, selections ast.SelectionSet, v []*model.Ticket) graphql.Marshaler {
+			return ec.marshalNTicket2ᚕᚖbuymeaticketᚑbackendᚋinternalᚋgraphᚋmodelᚐTicketᚄ(ctx, selections, v)
 		},
 		true,
-		false,
+		true,
 	)
 }
 func (ec *executionContext) fieldContext_Query_ticketSearch(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5026,7 +5026,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_ticketSearch(ctx, field)
-				if res == graphql.RequiredNull {
+				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
 				return res

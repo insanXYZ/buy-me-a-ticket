@@ -12,6 +12,7 @@ import (
 	"slices"
 
 	"github.com/go-playground/validator/v10"
+	"golang.org/x/text/search"
 	"gorm.io/gorm"
 )
 
@@ -267,4 +268,12 @@ func (t *TicketService) DeleteTicketHandler(ctx context.Context, claims *dto.Cla
 
 func (t *TicketService) RetrieveTicketsHandler(ctx context.Context) ([]entity.Ticket, error) {
 	return t.ticketRepository.FindWithAllRelation(ctx)
+}
+
+func (t *TicketService) RetrieveTicketWithSlugHandler(ctx context.Context, slug string) (entity.Ticket, error) {
+	return t.ticketRepository.TakeBySlugWithAllRelation(ctx, slug)
+}
+
+func (t *TicketService) SerachTicketsHandler(ctx context.Context, search string) ([]entity.Ticket , error) {
+	return t.ticketRepository.SearchNameWithAllRelation(ctx , search)
 }

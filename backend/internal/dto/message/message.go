@@ -16,5 +16,5 @@ const (
 	SuccessDeleteTicketCategory = "Delete ticket category successful"
 	SuccessCreateTicket         = "Create ticket successful"
 	SuccessUpdateTicket         = "Update ticket successful"
-	SuccessDeleteTicket = "Delete ticket successful"
+	SuccessDeleteTicket         = "Delete ticket successful"
 )

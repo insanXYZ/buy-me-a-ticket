@@ -3,5 +3,5 @@ type Query {
 
   tickets: [Ticket!]!
   ticket(slug: String!): Ticket
-  ticketSearch(slug: String!): Ticket
+  ticketSearch(search: String!): [Ticket!]!
 }

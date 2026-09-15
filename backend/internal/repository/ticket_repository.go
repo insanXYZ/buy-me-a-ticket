@@ -3,6 +3,7 @@ package repository
 import (
 	"buymeaticket-backend/internal/entity"
 	"context"
+	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -33,7 +34,21 @@ func (t *TicketRepository) TakeByIDWithUserID(ctx context.Context, ticketID, use
 
 func (t *TicketRepository) FindWithAllRelation(ctx context.Context) ([]entity.Ticket, error) {
 	var dst []entity.Ticket
-	err := t.db.WithContext(ctx).Preload("TicketDetail").Preload("TicketCategory").Preload("TicketVariants").Find(&dst).Error
+	err := t.db.WithContext(ctx).Preload("User").Preload("TicketDetail").Preload("TicketCategory").Preload("TicketVariants").Find(&dst).Error
+
+	return dst, err
+}
+
+func (t *TicketRepository) TakeBySlugWithAllRelation(ctx context.Context, slug string) (entity.Ticket, error) {
+	var dst entity.Ticket
+	err := t.db.WithContext(ctx).Preload("User").Preload("TicketDetail").Preload("TicketCategory").Preload("TicketVariants").Take(&dst, "slug = ?", slug).Error
+
+	return dst, err
+}
+
+func (t *TicketRepository) SearchNameWithAllRelation(ctx context.Context, search string) ([]entity.Ticket, error) {
+	var dst []entity.Ticket
+	err := t.db.WithContext(ctx).Preload("User").Preload("TicketDetail").Preload("TicketCategory").Preload("TicketVariants").Find(&dst, "ticket_details.title LIKE ?", fmt.Sprintf("%%%v%%", search)).Error
 
 	return dst, err
 }
